@@ -1,6 +1,6 @@
 use std::process::Command;
 
-use fantoccini::{ClientBuilder, wd::Capabilities};
+use fantoccini::{ClientBuilder, wd::Capabilities, Locator};
 use serde_json::json;
 
 const LOGIN_URL: &str = "https://ps.seattleschools.org/public/home.html";
@@ -29,6 +29,16 @@ async fn get_grades() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
 
     client.goto(LOGIN_URL).await?;
+
+    client
+        .form(Locator::Id("LoginForm"))
+        .await?
+        .set(Locator::Id("fieldAccount"), "-")
+        .await?
+        .set(Locator::Id("fieldPassword"), "-")
+        .await?
+        .submit()
+        .await?;
 
     let html = client.source().await?;
 
