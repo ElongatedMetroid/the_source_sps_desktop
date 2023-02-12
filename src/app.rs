@@ -2,11 +2,11 @@ use std::process::{Child, Command};
 
 use futures::executor::block_on;
 
-use crate::{config::Config, net::Grades};
+use crate::{config::Config, grades_client::GradesClient};
 
 pub struct App {
     web_driver_child: Child,
-    grades: Option<Grades>,
+    grades: Option<GradesClient>,
     /// Should be None unless a config was not provided
     config: Option<Config>,
 }
@@ -27,7 +27,7 @@ impl App {
         // if config does not exist, create one
         match Config::load() {
             Ok(config) => {
-                app.grades = Some(block_on(Grades::start_client(config)).unwrap());
+                app.grades = Some(block_on(GradesClient::start_client(config)).unwrap());
             }
             // TODO: Handle config error (instead of just assuming the file does not exist)
             Err(_) => {
@@ -49,11 +49,11 @@ impl eframe::App for App {
                     Config::write(self.config.as_ref().unwrap()).unwrap();
 
                     self.grades =
-                        Some(block_on(Grades::start_client(self.config.take().unwrap())).unwrap());
+                        Some(block_on(GradesClient::start_client(self.config.take().unwrap())).unwrap());
                 }
             } else {
                 ui.label("Grades");
-                ui.label(text)
+                //ui.label(text)
             }
         });
     }

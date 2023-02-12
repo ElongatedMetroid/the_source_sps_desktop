@@ -1,3 +1,4 @@
 pub mod app;
 pub mod config;
-pub mod net;
+pub mod grades_client;
+pub mod class; 
